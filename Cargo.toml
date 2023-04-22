@@ -1,0 +1,14 @@
+[package]
+name = "one-click-deploy"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "wait_for_blocks"
+path = "src/wait_for_blocks.rs"
+
+[dependencies]
+ethers = "2.*"
+tokio = { version = "1.0", features = ["full"] }

@@ -25,10 +25,13 @@ contract MyScript is Script {
         QuadraticFundingVotingStrategyImplementation qfVotingStratImpl = new QuadraticFundingVotingStrategyImplementation();
 
         /* Using ffi, wait for 4 blocks, and return the current timestamp back to solidity */
-        string[] memory inputs = new string[](3);
-        inputs[0] = "rust-script";
-        inputs[1] = "./scripts/wait_for_blocks.rs";
-        inputs[2] = "70";
+        string[] memory inputs = new string[](6);
+        inputs[0] = "cargo";
+        inputs[1] = "run";
+        inputs[2] = "--quiet";
+        inputs[3] = "--bin";
+        inputs[4] = "wait_for_blocks";
+        inputs[5] = "70";
 
         bytes memory res = vm.ffi(inputs);
         uint256 blockNumber = abi.decode(res, (uint256));
