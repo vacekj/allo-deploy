@@ -6,6 +6,7 @@ import "../lib/contracts/contracts/votingStrategy/QuadraticFundingStrategy/Quadr
 import "../lib/contracts/contracts/projectRegistry/ProjectRegistry.sol";
 import "../lib/contracts/contracts/program/ProgramFactory.sol";
 import "../lib/contracts/contracts/program/ProgramImplementation.sol";
+import "forge-std/Test.sol";
 
 contract MyScript is Script {
     function run() external {
@@ -22,6 +23,17 @@ contract MyScript is Script {
         programFactory.updateProgramContract(address(programImplementation));
 
         QuadraticFundingVotingStrategyImplementation qfVotingStratImpl = new QuadraticFundingVotingStrategyImplementation();
+
+        /* Using ffi, wait for 4 blocks, and return the current timestamp back to solidity */
+        string[] memory inputs = new string[](3);
+        inputs[0] = "rust-script";
+        inputs[1] = "./scripts/wait_for_blocks.rs";
+        inputs[2] = "70";
+
+        bytes memory res = vm.ffi(inputs);
+        uint256 blockNumber = abi.decode(res, (uint256));
+        console.logUint(blockNumber);
+
         vm.stopBroadcast();
     }
 }
