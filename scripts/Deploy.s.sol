@@ -24,6 +24,7 @@ contract MyScript is Script {
 
         QuadraticFundingVotingStrategyImplementation qfVotingStratImpl = new QuadraticFundingVotingStrategyImplementation();
 
+        vm.stopBroadcast();
         /* Using ffi, wait for 4 blocks, and return the current timestamp back to solidity */
         string[] memory inputs = new string[](6);
         inputs[0] = "cargo";
@@ -31,12 +32,11 @@ contract MyScript is Script {
         inputs[2] = "--quiet";
         inputs[3] = "--bin";
         inputs[4] = "wait_for_blocks";
-        inputs[5] = "70";
+        inputs[5] = "4";
 
         bytes memory res = vm.ffi(inputs);
         uint256 blockNumber = abi.decode(res, (uint256));
         console.logUint(blockNumber);
-
-        vm.stopBroadcast();
+        vm.startBroadcast();
     }
 }
