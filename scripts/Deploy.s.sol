@@ -13,6 +13,7 @@ import "../lib/contracts/contracts/round/RoundFactory.sol";
 import "../lib/contracts/contracts/round/RoundImplementation.sol";
 import "../lib/contracts/contracts/settings/AlloSettings.sol";
 import "../lib/forge-std/src/Test.sol";
+import "../lib/forge-std/src/console.sol";
 
 contract DeployAllo is Script {
     struct InitAddress {
@@ -105,8 +106,16 @@ contract DeployAllo is Script {
             "bafybeiceggy6uzfxsn3z6b2rraptp3g2kx2nrwailkjnx522yah43g5tyu"
         );
 
+        vm.recordLogs();
+
         for (uint256 i = 0; i < metaPtrs.length; i++) {
             registry.createProject(metaPtrs[i]);
+        }
+
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        for (uint i = 0; i < logs.length; i++) {
+            console.logBytes32(logs[i].topics[1]);
         }
 
         vm.stopBroadcast();
@@ -121,12 +130,8 @@ contract DeployAllo is Script {
         inputs[5] = "4";
 
         bytes memory res = vm.ffi(inputs);
-        uint256 blockNumber = abi.decode(res, (uint256));
 
-        console.logUint(blockNumber);
         vm.startBroadcast(deployerPrivateKey);
-
-        
 
         vm.stopBroadcast();
     }
