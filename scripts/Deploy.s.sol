@@ -87,23 +87,6 @@ contract DeployAllo is Script {
 
         roundFactory.create(params, deployerPubKey);
 
-        vm.stopBroadcast();
-
-        /* Using ffi, wait for 4 blocks, and return the current timestamp back to solidity */
-        string[] memory inputs = new string[](6);
-        inputs[0] = "cargo";
-        inputs[1] = "run";
-        inputs[2] = "--quiet";
-        inputs[3] = "--bin";
-        inputs[4] = "wait_for_blocks";
-        inputs[5] = "4";
-
-        bytes memory res = vm.ffi(inputs);
-        uint256 blockNumber = abi.decode(res, (uint256));
-
-        console.logUint(blockNumber);
-        vm.startBroadcast(deployerPrivateKey);
-
         MetaPtr[] memory metaPtrs = new MetaPtr[](4);
         metaPtrs[0] = MetaPtr(
             1,
@@ -125,6 +108,25 @@ contract DeployAllo is Script {
         for (uint256 i = 0; i < metaPtrs.length; i++) {
             registry.createProject(metaPtrs[i]);
         }
+
+        vm.stopBroadcast();
+
+        /* Using ffi, wait for 4 blocks, and return the current timestamp back to solidity */
+        string[] memory inputs = new string[](6);
+        inputs[0] = "cargo";
+        inputs[1] = "run";
+        inputs[2] = "--quiet";
+        inputs[3] = "--bin";
+        inputs[4] = "wait_for_blocks";
+        inputs[5] = "4";
+
+        bytes memory res = vm.ffi(inputs);
+        uint256 blockNumber = abi.decode(res, (uint256));
+
+        console.logUint(blockNumber);
+        vm.startBroadcast(deployerPrivateKey);
+
+        
 
         vm.stopBroadcast();
     }
