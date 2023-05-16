@@ -86,11 +86,6 @@ contract DeployAllo is Script {
             deployerPubKey
         );
 
-        address payable roundAddress = payable(
-            roundFactory.create(params, deployerPubKey)
-        );
-        RoundImplementation round = RoundImplementation(roundAddress);
-
         MetaPtr[] memory metaPtrs = new MetaPtr[](4);
         metaPtrs[0] = MetaPtr(
             1,
@@ -112,6 +107,11 @@ contract DeployAllo is Script {
         for (uint256 i = 0; i < metaPtrs.length; i++) {
             registry.createProject(metaPtrs[i]);
         }
+
+        address payable roundAddress = payable(
+            roundFactory.create(params, deployerPubKey)
+        );
+        RoundImplementation round = RoundImplementation(roundAddress);
 
         vm.stopBroadcast();
 
