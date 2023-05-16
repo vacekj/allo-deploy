@@ -39,6 +39,7 @@ contract DeployAllo is Script {
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address deployerPubKey = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
         vm.startBroadcast(deployerPrivateKey);
 
         ProjectRegistry registry = new ProjectRegistry();
@@ -81,10 +82,10 @@ contract DeployAllo is Script {
         bytes memory params = generateAndEncodeRoundParam(
             address(qfVotingStratImpl),
             payable(merkleImpl),
-            msg.sender
+            deployerPubKey
         );
 
-        roundFactory.create(params, msg.sender);
+        roundFactory.create(params, deployerPubKey);
 
         vm.stopBroadcast();
 
@@ -101,7 +102,29 @@ contract DeployAllo is Script {
         uint256 blockNumber = abi.decode(res, (uint256));
 
         console.logUint(blockNumber);
-        vm.startBroadcast();
+        vm.startBroadcast(deployerPrivateKey);
+
+        MetaPtr[] memory metaPtrs = new MetaPtr[](4);
+        metaPtrs[0] = MetaPtr(
+            1,
+            "bafybeiekytxwrrfzxvuq3ge5glfzlhkuxjgvx2qb4swodhqd3c3mtc5jay"
+        );
+        metaPtrs[1] = MetaPtr(
+            1,
+            "bafybeih2pise44gkkzj7fdws3knwotppnh4x2gifnbxjtttuv7okw4mjzu"
+        );
+        metaPtrs[2] = MetaPtr(
+            1,
+            "bafybeiceggy6uzfxsn3z6b2rraptp3g2kx2nrwailkjnx522yah43g5tyu"
+        );
+        metaPtrs[3] = MetaPtr(
+            1,
+            "bafybeiceggy6uzfxsn3z6b2rraptp3g2kx2nrwailkjnx522yah43g5tyu"
+        );
+
+        for (uint256 i = 0; i < metaPtrs.length; i++) {
+            registry.createProject(metaPtrs[i]);
+        }
 
         vm.stopBroadcast();
     }
@@ -110,7 +133,7 @@ contract DeployAllo is Script {
         address votingContract,
         address payable payoutContract,
         address adminAddress
-    ) public returns (bytes memory) {
+    ) public view returns (bytes memory) {
         uint256 currentTimestamp = block.timestamp;
         MetaPtr memory roundMetaPtr = MetaPtr(
             1,
