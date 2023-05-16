@@ -86,7 +86,10 @@ contract DeployAllo is Script {
             deployerPubKey
         );
 
-        roundFactory.create(params, deployerPubKey);
+        address payable roundAddress = payable(
+            roundFactory.create(params, deployerPubKey)
+        );
+        RoundImplementation round = RoundImplementation(roundAddress);
 
         MetaPtr[] memory metaPtrs = new MetaPtr[](4);
         metaPtrs[0] = MetaPtr(
@@ -106,32 +109,28 @@ contract DeployAllo is Script {
             "bafybeiceggy6uzfxsn3z6b2rraptp3g2kx2nrwailkjnx522yah43g5tyu"
         );
 
-        vm.recordLogs();
-
         for (uint256 i = 0; i < metaPtrs.length; i++) {
             registry.createProject(metaPtrs[i]);
         }
 
-        Vm.Log[] memory logs = vm.getRecordedLogs();
-
-        for (uint i = 0; i < logs.length; i++) {
-            console.logBytes32(logs[i].topics[1]);
-        }
-
         vm.stopBroadcast();
 
-        /* Using ffi, wait for 4 blocks, and return the current timestamp back to solidity */
         string[] memory inputs = new string[](6);
         inputs[0] = "cargo";
         inputs[1] = "run";
         inputs[2] = "--quiet";
         inputs[3] = "--bin";
         inputs[4] = "wait_for_blocks";
-        inputs[5] = "4";
+        inputs[5] = "1";
 
         bytes memory res = vm.ffi(inputs);
 
         vm.startBroadcast(deployerPrivateKey);
+
+        /* Apply to round with all the projects */
+        for (uint256 i = 0; i < metaPtrs.length; i++) {
+            round.applyToRound(bytes32(i), metaPtrs[i]);
+        }
 
         vm.stopBroadcast();
     }
@@ -160,7 +159,7 @@ contract DeployAllo is Script {
             QuadraticFundingVotingStrategyImplementation(votingContract),
             MerklePayoutStrategyImplementation(payoutContract)
         );
-        uint256 SECONDS_PER_SLOT = 15;
+        uint256 SECONDS_PER_SLOT = 12;
         InitRoundTime memory initRoundTime = InitRoundTime(
             currentTimestamp + 1,
             currentTimestamp + SECONDS_PER_SLOT * 4,
