@@ -113,27 +113,7 @@ contract DeployAllo is Script {
         );
         RoundImplementation round = RoundImplementation(roundAddress);
 
-        vm.stopBroadcast();
-
-        string[] memory inputs = new string[](6);
-        inputs[0] = "cargo";
-        inputs[1] = "run";
-        inputs[2] = "--quiet";
-        inputs[3] = "--bin";
-        inputs[4] = "wait_for_blocks";
-        inputs[5] = "2";
-
-        bytes memory res = vm.ffi(inputs);
-
-        vm.startBroadcast(deployerPrivateKey);
-
-        /* Apply to round with all the projects */
-        for (uint256 i = 0; i < metaPtrs.length; i++) {
-            console.log("Current block time: %s", block.timestamp); 
-            round.applyToRound(bytes32(i), metaPtrs[i]);
-        }
-
-        vm.stopBroadcast();
+        vm.stopBroadcast(); 
     }
 
     function generateAndEncodeRoundParam(

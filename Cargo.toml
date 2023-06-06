@@ -11,4 +11,6 @@ path = "src/wait_for_blocks.rs"
 
 [dependencies]
 ethers = "2.*"
+serde = "1.0.163"
+serde_json = "1.0.96"
 tokio = { version = "1.0", features = ["full"] }
