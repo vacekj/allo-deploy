@@ -1,5 +1,5 @@
 use std::{
-    fs::{self, File},
+    fs::{self},
     process::Command,
 };
 
@@ -47,14 +47,16 @@ struct TransactionData {
 
 fn main() {
     /* Deploy round and everything  using forge script */
-    Command::new("forge")
-        .arg("script")
-        .arg("scripts/Deploy.s.sol")
-        .arg("--broadcast")
-        .arg("-rpc-url")
-        .arg("http://localhost:8545")
-        .arg("-ffi")
-        .arg("--via-ir")
+    let mut output = Command::new("forge")
+        .args([
+            "script",
+            "scripts/Deploy.s.sol",
+            "--broadcast",
+            "--rpc-url",
+            "http://localhost:8545",
+            "--ffi",
+            "--via-ir",
+        ])
         .output()
         .expect("Failed deploy script");
 
@@ -68,23 +70,35 @@ fn main() {
         .transactions
         .iter()
         .find(|tx| !tx.additionalContracts.is_empty())
-        .expect("Didn't find addio");
+        .expect("Didn't find address");
     let round_address = &round_tx.additionalContracts[0].address;
+
+    println!("status: {}", output.status);
+    println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+    println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
 
     /* Pass round address to script */
     std::env::set_var("ROUND_ADDRESS", round_address);
 
+    /* TODO: wait until applications are started */
+
     /* Apply to Round using script */
-    Command::new("forge")
-        .arg("script")
-        .arg("scripts/Apply.s.sol")
-        .arg("--broadcast")
-        .arg("-rpc-url")
-        .arg("http://localhost:8545")
-        .arg("-ffi")
-        .arg("--via-ir")
+    output = Command::new("forge")
+        .args([
+            "script",
+            "scripts/Apply.s.sol",
+            "--broadcast",
+            "--rpc-url",
+            "http://localhost:8545",
+            "--ffi",
+            "--via-ir",
+        ])
         .output()
         .expect("Failed apply script");
+
+    println!("status: {}", output.status);
+    println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+    println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
 
     /* Approve/Reject using script */
 

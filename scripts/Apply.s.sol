@@ -15,17 +15,17 @@ import "../lib/contracts/contracts/settings/AlloSettings.sol";
 import "../lib/forge-std/src/Test.sol";
 import "../lib/forge-std/src/console.sol";
 
-contract DeployAllo is Script {
+contract ApplyToRound is Script {
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address deployerPubKey = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
         vm.startBroadcast(deployerPrivateKey);
 
         string memory key = "ROUND_ADDRESS";
-        address output = cheats.envAddress(key);
+        address output = vm.envAddress(key);
+        console.log("%s", output);
 
-        RoundImplementation roundImpl = RoundImplementation(output);
+        RoundImplementation round = RoundImplementation(payable(output));
         MetaPtr[] memory metaPtrs = new MetaPtr[](4);
         metaPtrs[0] = MetaPtr(
             1,

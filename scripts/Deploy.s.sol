@@ -108,10 +108,7 @@ contract DeployAllo is Script {
             registry.createProject(metaPtrs[i]);
         }
 
-        address payable roundAddress = payable(
-            roundFactory.create(params, deployerPubKey)
-        );
-        RoundImplementation round = RoundImplementation(roundAddress);
+        roundFactory.create(params, deployerPubKey);
 
         vm.stopBroadcast(); 
     }
@@ -140,9 +137,9 @@ contract DeployAllo is Script {
             QuadraticFundingVotingStrategyImplementation(votingContract),
             MerklePayoutStrategyImplementation(payoutContract)
         );
-        uint256 SECONDS_PER_SLOT = 12;
+        uint256 SECONDS_PER_SLOT = 5;
         InitRoundTime memory initRoundTime = InitRoundTime(
-            currentTimestamp + 1,
+            currentTimestamp + SECONDS_PER_SLOT * 2,
             currentTimestamp + SECONDS_PER_SLOT * 4,
             currentTimestamp + SECONDS_PER_SLOT * 6,
             currentTimestamp + SECONDS_PER_SLOT * 8
