@@ -137,12 +137,12 @@ contract DeployAllo is Script {
             QuadraticFundingVotingStrategyImplementation(votingContract),
             MerklePayoutStrategyImplementation(payoutContract)
         );
-        uint256 SECONDS_PER_SLOT = 5;
+        uint256 SECONDS_PER_SLOT = vm.envOr("PRIVATE_KEY", 15); // Goerli slot time
         InitRoundTime memory initRoundTime = InitRoundTime(
-            currentTimestamp + SECONDS_PER_SLOT * 2,
-            currentTimestamp + SECONDS_PER_SLOT * 4,
-            currentTimestamp + SECONDS_PER_SLOT * 6,
-            currentTimestamp + SECONDS_PER_SLOT * 8
+            currentTimestamp + 1, // Applications start
+            currentTimestamp + 30, // Applications End
+            currentTimestamp + 60, // Voting Starts
+            currentTimestamp + 120 // Voting Ends
         );
         InitMetaPtr memory initMetaPtr = InitMetaPtr(
             roundMetaPtr,
